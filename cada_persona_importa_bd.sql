@@ -216,6 +216,15 @@ constraint CUIL_DNI_id_PK_Padece primary key (CUIL, DNI, id),
 constraint CUIL_DNI_id_FK_Padece foreign key (CUIL, DNI) references Persona (CUIL, DNI)
 );
 
+create table Puede_Ser (
+cod int,
+cod_nomenclador int,
+ constraint PRIMARY KEY (cod , cod_nomenclador),
+ constraint FOREIGN KEY (cod) REFERENCES Evento (cod),
+  FOREIGN KEY (cod_nomenclador) REFERENCES Tratamiento (cod_nomenclador)
+);
+
+
 
 
 
