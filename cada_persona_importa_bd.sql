@@ -181,23 +181,41 @@ CREATE TABLE tiene_PDA (
         REFERENCES Antecedente (cod)
 );
 
-CREATE table Recibe (
-CUIL BIGINT,
-    DNI BIGINT ,
+CREATE TABLE Recibe (
+    CUIL BIGINT,
+    DNI BIGINT,
     mat_nacional BIGINT,
     mat_provincial BIGINT,
     cod_nomenclador INT,
-    tiene_profesional boolean,
-    CONSTRAINT CUIL_DNI_mat_nacional_mat_provincial_cod_nomenclador_pk_recibe PRIMARY KEY (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador),
-     CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL , DNI)
+    tiene_profesional BOOLEAN,
+    CONSTRAINT CUIL_DNI_mat_nacional_mat_provincial_cod_nomenclador_pk_recibe 
+    PRIMARY KEY (CUIL , DNI , mat_nacional , mat_provincial , cod_nomenclador),
+    CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL , DNI)
         REFERENCES Persona (CUIL , DNI),
-        CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
-        REFERENCES Persona (CUIL , DNI),
-   
-    );
+    CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
+        REFERENCES Persona (CUIL , DNI)
+);
 
+/*
+Padece(CUIL, DOC, id)
 
--- Recibe(CUIL, DOC,  m_prov, m_nac, cod_nomneclador, tiene_profesional)
+Puede_ser(id, cod_nomenclador)
+
+Produce(cod_nomenclador, cod)
+
+Se_realizan(cod_nomenclador, nro)
+
+Tiene(id_contra,cod_nomeclador)
+*/
+
+create table Padece (
+CUIL BIGINT,
+DNI BIGINT,
+id int, 
+constraint CUIL_DNI_id_PK_Padece primary key (CUIL, DNI, id),
+constraint CUIL_DNI_id_FK_Padece foreign key (CUIL, DNI) references Persona (CUIL, DNI)
+);
+
 
 
 
