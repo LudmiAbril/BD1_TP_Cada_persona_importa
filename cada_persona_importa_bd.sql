@@ -188,22 +188,19 @@ CREATE TABLE Recibe (
     mat_provincial BIGINT,
     cod_nomenclador INT,
     tiene_profesional BOOLEAN,
+    
     CONSTRAINT CUIL_DNI_mat_nacional_mat_provincial_cod_nomenclador_pk_recibe 
     PRIMARY KEY (CUIL , DNI , mat_nacional , mat_provincial , cod_nomenclador),
-    CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL , DNI)
+    
+    CONSTRAINT CUIL_DNI_fk_Recibe FOREIGN KEY (CUIL , DNI)
         REFERENCES Persona (CUIL , DNI),
+        
     CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
         REFERENCES Persona (CUIL , DNI)
 );
 
 /*
-Padece(CUIL, DOC, id)
 
-Puede_ser(id, cod_nomenclador)
-
-Produce(cod_nomenclador, cod)
-
-Se_realizan(cod_nomenclador, nro)
 
 Tiene(id_contra,cod_nomeclador)
 */
@@ -211,11 +208,33 @@ Tiene(id_contra,cod_nomeclador)
 create table Padece (
 CUIL BIGINT,
 DNI BIGINT,
-id int, 
-constraint CUIL_DNI_id_PK_Padece primary key (CUIL, DNI, id),
-constraint CUIL_DNI_id_FK_Padece foreign key (CUIL, DNI) references Persona (CUIL, DNI)
+cod int, 
+constraint CUIL_DNI_id_PK_Padece primary key (CUIL, DNI, cod),
+constraint CUIL_DNI_FK_Padece foreign key (CUIL, DNI) references Persona (CUIL, DNI),
+constraint cod_FK_Padece foreign key (cod) references Evento (cod)
 );
 
+
+
+
+create table Produce (
+cod_nomenclador INT,
+cod int,
+constraint cod_nomenclador_cod_PK_produce primary key (cod_nomenclador, cod),
+constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador)
+);
+
+-- Se_realizan.cod_nomneclador -> Tratamiento.cod_nomneclador
+-- Se_realizan.nro -> Centro_salud.nro
+
+-- Se_realizan(cod_nomenclador, nro)
+create table Se_realizan (
+cod_nomenclador INT,
+nro INT,
+constraint cod_nomenclador_nro_PK_Se_realizan primary key (cod_nomenclador, nro),
+constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
+constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
+);
 
 
 
