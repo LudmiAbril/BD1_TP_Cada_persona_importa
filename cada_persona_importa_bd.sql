@@ -59,6 +59,11 @@ CREATE TABLE Persona (
     CONSTRAINT Persona_PK PRIMARY KEY (CUIL , DNI)
 );
 
+-- INSERCION DATOS A PERSONA
+
+
+
+
 CREATE TABLE Evento (
     cod INT PRIMARY KEY,
     descripcion VARCHAR(35)
@@ -81,6 +86,23 @@ CREATE TABLE Tratamiento (
     es_invasivo BOOLEAN,
     parte_cuerpo_aplicacion VARCHAR(30)
 );
+
+-- INSERCION DATOS A TRATAMIENTOS
+
+INSERT INTO Tratamiento (cod_nomenclador,descripcion,es_invasivo,parte_cuerpo_Aplicacion)
+VALUES
+(1,"aspirina",false,"via oral"),
+(2,"colocación de DIU, SIU Bajo Anestesia ",true,"utero"),
+(3,"vacuna antigripal",true,"músculo deltoide"),
+(4,"ibuprofeno",false,"via oral"),
+(5,"vacuna para varicela",true,"músculo deltoide"),
+(6,"cirugía cataratas",true,"ojos"),
+(7,"paracetamol",false,"via oral"),
+(8,"artroscopia",true,"articulaciones"),
+(9,"metformina",false,"via oral"),
+(10,"quimioterapia",true,"cavidad peritoneal"),
+(11,"vacuna contra el virus del papiloma humano",false,"músculo deltoide"),
+(12,"Desloratadina",false,"via oral");
 
 CREATE TABLE Centro_salud (
     nro INT PRIMARY KEY,
@@ -181,19 +203,17 @@ CREATE TABLE tiene_PDA (
         REFERENCES Antecedente (cod)
 );
 
-CREATE TABLE Recibe (
-    CUIL BIGINT,
-    DNI BIGINT,
+CREATE table Recibe (
+CUIL BIGINT,
+    DNI BIGINT ,
     mat_nacional BIGINT,
     mat_provincial BIGINT,
     cod_nomenclador INT,
-    tiene_profesional BOOLEAN,
-    
-    CONSTRAINT CUIL_DNI_mat_nacional_mat_provincial_cod_nomenclador_pk_recibe 
-    PRIMARY KEY (CUIL , DNI , mat_nacional , mat_provincial , cod_nomenclador),
-    
-    CONSTRAINT CUIL_DNI_fk_Recibe FOREIGN KEY (CUIL , DNI)
+    tiene_profesional boolean,
+    CONSTRAINT CUIL_DNI_mat_nacional_mat_provincial_cod_nomenclador_pk_recibe PRIMARY KEY (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador),
+     CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL , DNI)
         REFERENCES Persona (CUIL , DNI),
+<<<<<<< HEAD
         
     CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
         REFERENCES Persona (CUIL , DNI)
@@ -244,6 +264,15 @@ constraint cod_nomenclador_nro_PK_Se_realizan primary key (cod_nomenclador, nro)
 constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
 constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
 );
+=======
+        CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
+        REFERENCES Persona (CUIL , DNI),
+   
+    );
+
+
+-- Recibe(CUIL, DOC,  m_prov, m_nac, cod_nomneclador, tiene_profesional)
+>>>>>>> a7c846be413f0e3f3af7afb0f67a3caf1ca3b15b
 
 /*
 
