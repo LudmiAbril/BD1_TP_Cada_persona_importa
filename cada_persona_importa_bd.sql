@@ -224,7 +224,13 @@ cod_nomenclador int,
   FOREIGN KEY (cod_nomenclador) REFERENCES Tratamiento (cod_nomenclador)
 );
 
-
+create table Tiene (
+id_contra int ,
+cod_nomenclador int,
+constraint PRIMARY KEY(id_contra, cod_nomenclador),
+ constraint FOREIGN KEY (cod_nomenclador) REFERENCES Tratamiento (cod_nomenclador),
+ constraint FOREIGN KEY (id_contra) REFERENCES Contraindicaciones (id)
+);
 
 
 
