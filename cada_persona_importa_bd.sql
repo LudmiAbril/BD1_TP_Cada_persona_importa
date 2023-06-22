@@ -199,12 +199,6 @@ CREATE TABLE Recibe (
         REFERENCES Persona (CUIL , DNI)
 );
 
-/*
-
-
-Tiene(id_contra,cod_nomeclador)
-*/
-
 create table Padece (
 CUIL BIGINT,
 DNI BIGINT,
@@ -251,7 +245,21 @@ constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) referenc
 constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
 );
 
+/*
 
+
+
+
+
+C O N S U L T A S
+
+
+
+
+
+*/
+
+-- i. Top 10 de tratamientos con más de 10 efectos adversos.
 
 
         
