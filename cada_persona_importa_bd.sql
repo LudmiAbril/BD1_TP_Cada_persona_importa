@@ -300,7 +300,7 @@ C O N S U L T A S
 */
 
 
--- i.
+/*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
 select 
     t.cod_nomenclador,
@@ -336,7 +336,8 @@ Where
                 AND R.CUIL = P.CUIL);
 
 
--- iii.
+/* iii. ¿Cuántas personas ha habido que hayan tenido la mayor cantidad de efectos
+adversos de algún tratamiento de vacunación? */
 
 select 
     a.DNI, COUNT(a.DNI) as cantidad_efectos_que_tuvo
