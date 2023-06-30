@@ -308,8 +308,15 @@ CREATE TABLE Trat_produce_efec_esperado (
         REFERENCES Efectos_esperados (cod)
 );
 
+<<<<<<< HEAD
 -- i.
 SELECT t.cod_nomenclador,
+=======
+/*i. Top 10 de tratamientos con más de 10 efectos adversos. */
+
+select 
+    t.cod_nomenclador,
+>>>>>>> b6b5415d2f496848eb34d36111587bad8ce0249a
     t.descripcion,
     COUNT(t.cod_nomeclador) AS cantidad_efectos FROM
     Tratamiento t
@@ -341,7 +348,8 @@ Where
                 AND R.CUIL = P.CUIL);
 
 
--- iii.
+/* iii. ¿Cuántas personas ha habido que hayan tenido la mayor cantidad de efectos
+adversos de algún tratamiento de vacunación? */
 
 select 
     a.DNI, COUNT(a.DNI) as cantidad_efectos_que_tuvo
