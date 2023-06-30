@@ -203,20 +203,26 @@ CREATE TABLE tiene_PDA (
         REFERENCES Antecedente (cod)
 );
 
-CREATE table Recibe (
-CUIL BIGINT,
-    DNI BIGINT ,
+CREATE TABLE Recibe (
+    CUIL BIGINT,
+    DNI BIGINT,
     mat_nacional BIGINT,
     mat_provincial BIGINT,
     cod_nomenclador INT,
-    tiene_profesional boolean,
-    CONSTRAINT CUIL_DNI_mat_nacional_mat_provincial_cod_nomenclador_pk_recibe PRIMARY KEY (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador),
-     CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL , DNI)
-        REFERENCES Persona (CUIL , DNI),
-<<<<<<< HEAD
+    tiene_profesional BOOLEAN,
+    
+    PRIMARY KEY (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador),
+    
+    CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL, DNI)
+        REFERENCES Persona (CUIL, DNI),
         
-    CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
-        REFERENCES Persona (CUIL , DNI)
+    CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (mat_nacional , mat_provincial)
+        REFERENCES profesional (mat_provincial , mat_provincial),
+        
+    CONSTRAINT cod_nomenclador_fk_recibe FOREIGN KEY (cod_nomenclador)
+        REFERENCES tratamiento (cod_nomenclador)
+    
+    
 );
 
 create table Padece (
@@ -262,17 +268,16 @@ cod_nomenclador INT,
 nro INT,
 constraint cod_nomenclador_nro_PK_Se_realizan primary key (cod_nomenclador, nro),
 constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
-constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
-);
-=======
+constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro),
+
         CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
-        REFERENCES Persona (CUIL , DNI),
+        REFERENCES Persona (CUIL , DNI)
    
     );
 
 
 -- Recibe(CUIL, DOC,  m_prov, m_nac, cod_nomneclador, tiene_profesional)
->>>>>>> a7c846be413f0e3f3af7afb0f67a3caf1ca3b15b
+
 
 /*
 
@@ -288,27 +293,66 @@ C O N S U L T A S
 
 */
 
--- i. Top 10 de tratamientos con más de 10 efectos adversos.
+
+-- i.
+
+select 
+    t.cod_nomenclador,
+    t.descripcion,
+    count(t.cod_nomeclador) as cantidad_efectos
+from
+    Tratamiento t
+        join
+    produce p ON t.cod_nomenclador = p.cod_nomenclador
+where
+    count(t.cod_nomeclador) > 10
+group by t.cod_nomenclador
+order by count(t.cod_nomeclador) desc;
+
+-- /*ii. Cantidad de personas con algún tratamiento diagnóstico que no haya confirmado el diagnóstico. */ 
+  
+SELECT 
+    COUNT(P.CUIL)
+FROM
+    Persona P
+Where
+    NOT exists( select 
+            1
+        FROM
+            Recibe R
+                JOIN
+            Tratamiento T ON R.cod_nomenclador = T.cod_nomenclador
+                JOIN
+            Prac_diag pd ON pd.cod_nomenclador = T.cod_nomenclador
+        WHERE
+            pd.confirmacion_diag_presuntivo is TRUE
+                AND R.CUIL = P.CUIL
+                AND R.CUIL = P.CUIL);
 
 
-        
+-- iii.
 
-/*create table Tratamiento(
-cod_nomenclador int primary key,
-descripcion varchar(50),
-es_invasivo boolean,
-parte_cuerpo_aplicacion varchar(30));*/
-
-/*CREATE TABLE Empleado(
-nro_emp int PRIMARY KEY auto_increment, 
-nombre char (15) not null, 
-cod_esp INT NOT NULL,
-nro_jefe int,
-sueldo bigint not null, 
-f_ingreso date not null,
-CONSTRAINT cod_esp_fk FOREIGN KEY (cod_esp) REFERENCES Especialidad(cod_esp), 
-constraint nro_jefe_fk foreign key (nro_jefe) references Empleado (nro_emp)
-);*/
-
-
+select 
+    a.DNI, COUNT(a.DNI) as cantidad_efectos_que_tuvo
+from
+    (select 
+        P.DNI, P.CUIL
+    from
+        Persona P
+    join Recibe R ON R.CUIL = P.CUIL and R.DNI = P.DNI
+    JOIN Tratamiento T ON T.cod_nomenclador = R.cod_nomenclador
+    join Produce PR ON T.cod_nomenclador = PR.cod_nomenclador
+    where
+        T.descripcion like 'Vacuna%') a
+where
+    count(a.DNI) = (select 
+            max(b.cantidad)
+        from
+            (select 
+                count(T.cod_nomenclador) as cantidad
+            from
+                Tratamiento T
+            join Produce PR ON T.cod_nomenclador = PR.cod_nomenclador
+            where
+                T.descripcion like 'Vacuna%') b); 
 
