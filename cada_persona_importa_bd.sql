@@ -219,13 +219,13 @@ CREATE TABLE Recibe (
     cod_nomenclador INT,
     tiene_profesional BOOLEAN,
     
-    PRIMARY KEY (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador),
+  CONSTRAINT Recibe_pk PRIMARY KEY (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador),
     
-    CONSTRAINT CUIL_DNI_fk_tiene_PDA FOREIGN KEY (CUIL, DNI)
+    CONSTRAINT CUIL_DNI_fk_recibe FOREIGN KEY (CUIL, DNI)
         REFERENCES Persona (CUIL, DNI),
         
     CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (mat_nacional , mat_provincial)
-        REFERENCES profesional (mat_provincial , mat_provincial),
+        REFERENCES Profesional (mat_nacional , mat_provincial),
         
     CONSTRAINT cod_nomenclador_fk_recibe FOREIGN KEY (cod_nomenclador)
         REFERENCES tratamiento (cod_nomenclador)
@@ -276,10 +276,7 @@ cod_nomenclador INT,
 nro INT,
 constraint cod_nomenclador_nro_PK_Se_realizan primary key (cod_nomenclador, nro),
 constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
-constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro),
-
-        CONSTRAINT mat_nacional_mat_provincial_fk_recibe FOREIGN KEY (CUIL , DNI)
-        REFERENCES Persona (CUIL , DNI)
+constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
    
     );
 
