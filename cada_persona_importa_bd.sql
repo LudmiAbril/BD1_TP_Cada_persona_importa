@@ -264,7 +264,8 @@ create table Produce (
 cod_nomenclador INT,
 cod int,
 constraint cod_nomenclador_cod_PK_produce primary key (cod_nomenclador, cod),
-constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador)
+constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
+constraint cod_FK_produce foreign key (cod) references Efecto_adverso(cod)
 );
 
 -- Se_realizan.cod_nomneclador -> Tratamiento.cod_nomneclador
@@ -361,3 +362,10 @@ where
             where
                 T.descripcion like 'Vacuna%') b); 
 
+/* vi. ¿Cuántas muertes ocurrieron relacionadas con vacunas, agrupando por vacuna,
+durante los años 2021 al 2023? */
+
+select T.descripcion, count(T.cod_nomenclador) as Cantidad_de_muertes_desde_2021_a_2022
+from Tratamiento T join Produce P on T.cod_nomenclador = P.cod_nomenclador join Efecto_adverso E on P.cod = E.cod
+where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '2023-12-31'
+order by T.descripcion;
