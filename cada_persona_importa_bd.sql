@@ -308,15 +308,10 @@ CREATE TABLE Trat_produce_efec_esperado (
         REFERENCES Efectos_esperados (cod)
 );
 
-<<<<<<< HEAD
--- i.
-SELECT t.cod_nomenclador,
-=======
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
 select 
     t.cod_nomenclador,
->>>>>>> b6b5415d2f496848eb34d36111587bad8ce0249a
     t.descripcion,
     COUNT(t.cod_nomeclador) AS cantidad_efectos FROM
     Tratamiento t
@@ -382,3 +377,24 @@ select T.descripcion, count(T.cod_nomenclador) as Cantidad_de_muertes_desde_2021
 from Tratamiento T join Produce P on T.cod_nomenclador = P.cod_nomenclador join Efecto_adverso E on P.cod = E.cod
 where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '2023-12-31'
 order by T.descripcion;
+
+-- Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
+-- edad > 18
+-- de bajo riesgo: que tiene más efectos esperados que efectos adversos
+-- cuando la cantidad de efectos esperados es mayor a la cantidad de efectos adversos es de bajo riesgo
+
+(select count (r.cod_nomenclador) as efec_adv
+-- cuento la cantidad de veces q aparece codigo nomenclador en alto riesgo
+from Recibe r join Produce AR on r.cod_nomenclador = AR.cod_nomenclador) < (select count (r.cod_nomenclador) as efec_esp
+from recibe r join trat_produce_efec_esperado BJ on r.cod_nomenclador = BJ.cod_nomenclador)
+
+(r.dni, r.cuil) in      
+(select t.cuil, t.dni
+from tiene t join persona p on t.dni = p.dni and t.cuil = p.cuil
+where year(f_nac) = 2005
+group by t.cod_ante
+having count >= 2)
+
+
+
+
