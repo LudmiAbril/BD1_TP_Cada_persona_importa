@@ -282,6 +282,7 @@ constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
     );
 
 
+
 -- Recibe(CUIL, DOC,  m_prov, m_nac, cod_nomneclador, tiene_profesional)
 
 
@@ -300,10 +301,17 @@ C O N S U L T A S
 */
 
 
+
+
+-- i.
+SELECT t.cod_nomenclador,
+
+
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
 select 
     t.cod_nomenclador,
+
     t.descripcion,
     count(t.cod_nomeclador) as cantidad_efectos
 from
@@ -372,9 +380,49 @@ where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '
 order by T.descripcion;
 
 
+
 /* ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
 considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
 50 años, 51-70 años, 71-90 años, 91 o más años.
  */
  
  
+
+-- Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
+-- edad > 18
+-- de bajo riesgo: que tiene más efectos esperados que efectos adversos
+-- cuando la cantidad de efectos esperados es mayor a la cantidad de efectos adversos es de bajo riesgo
+
+(select count (r.cod_nomenclador) as efec_adv
+-- cuento la cantidad de veces q aparece codigo nomenclador en alto riesgo
+from Recibe r join Produce AR on r.cod_nomenclador = AR.cod_nomenclador) < (select count (r.cod_nomenclador) as efec_esp
+from recibe r join trat_produce_efec_esperado BJ on r.cod_nomenclador = BJ.cod_nomenclador)
+
+(r.dni, r.cuil) in      
+(select t.cuil, t.dni
+from tiene t join persona p on t.dni = p.dni and t.cuil = p.cuil
+where year(f_nac) = 2005
+group by t.cod_ante
+having count >= 2)
+
+
+
+
+
+
+/*vi. Formulen una consulta que permita a un profesional médico descartar un
+tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
+guardarían para realizar esta comparación? Incluirla en el modelo completo.*/
+
+
+SELECT R.cod_nomenclador, t.descripcion AS "tratamiento", YEAR(p.f_nac)
+FROM Persona P JOIN Recibe R on P.CUIL = R.CUIL
+AND p.f_nac >"2013-01-01"
+WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
+							FROM Tratamiento t JOIN Produce p on t.cod_nomenclador=p.cod_nomenclador
+                            JOIN Efecto_Adverso EF on EF.cod=p.cod
+                            WHERE (SELECT COUNT(*)
+                                   FROM Efecto_Adverso E
+                                   GROUP BY E.cod
+                                   having count(E.cod)> 5 ));
+
