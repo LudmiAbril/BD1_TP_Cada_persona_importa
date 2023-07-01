@@ -56,37 +56,21 @@ Creacion de tablas e inserción de datos
 CREATE TABLE Persona (
     CUIL BIGINT,
     DNI BIGINT,
-    f_nac date,
     CONSTRAINT Persona_PK PRIMARY KEY (CUIL , DNI)
 );
 
-create table es_hijo_de (
-CUIL BIGINT,
-DNI BIGINT,
-CUIL_P bigint,
-DNI_P bigint,
-constraint es_hijo_de_PK primary key (CUIL, DNI),
-constraint es_hijo_de_FK foreign key (CUIL_P, DNI_P) references Persona (CUIL, DNI)
+INSERT INTO Persona (CUIL, DNI)
+VALUES (20345678902, 50123456),
+       (20456789013, 60123456),
+       (20567890124, 70123456),
+       (20678901235, 80123456),
+       (20789012346, 90123456),
+       (20890123457, 10012345),
+       (20901234568, 11012345),
+       (21012345679, 12012345),
+       (21123456780, 13012345),
+       (21234567891, 14012345);
 
-);
-
-INSERT INTO Persona (CUIL, DNI, f_nac)
-VALUES 
-    (111111111, 111111111, '1995-05-10'),
-    (222222222, 222222222, '1980-12-03'),
-    (333333333, 333333333, '1961-07-15'),
-    (444444444, 444444444, '1946-09-22'),
-    (555555555, 555555555, '1930-02-28'),
-    (666666666, 666666666, '1987-11-17'),
-    (777777777, 777777777, '2003-06-12'),
-    (888888888, 888888888, '1995-04-07'),
-    (999999999, 999999999, '1983-08-25'),
-    (123456789, 987654321, '1979-03-19'),
-    (234567890, 876543210, '2023-10-06'),
-    (345678901, 765432109, '1988-07-02'),
-    (456789012, 654321098, '2020-12-14'),
-    (567890123, 543210987, '2013-09-30'),
-    (678901234, 432109876, '2010-06-24');
 
 CREATE TABLE Evento (
     cod INT PRIMARY KEY,
@@ -284,6 +268,10 @@ constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references T
 constraint cod_FK_produce foreign key (cod) references Efecto_adverso(cod)
 );
 
+-- Se_realizan.cod_nomneclador -> Tratamiento.cod_nomneclador
+-- Se_realizan.nro -> Centro_salud.nro
+
+-- Se_realizan(cod_nomenclador, nro)
 create table Se_realizan (
 cod_nomenclador INT,
 nro INT,
@@ -292,40 +280,40 @@ constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) referenc
 constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
    
     );
-    
-    create table Efectos_esperados ( 
-    cod int primary key, 
-nombre varchar(35),
-f_ocurrencia date);
 
-CREATE TABLE Trat_produce_efec_esperado (
-    cod_nomenclador INT,
-    cod INT,
-    CONSTRAINT Trat_produce_efec_esperado_PK PRIMARY KEY (cod_nomenclador , cod),
-    CONSTRAINT Trat_produce_efec_esperado_FK FOREIGN KEY (cod_nomenclador)
-        REFERENCES Tratamiento (cod_nomenclador),
-    CONSTRAINT Trat_produce_efec_esperado_cod_FK FOREIGN KEY (cod)
-        REFERENCES Efectos_esperados (cod)
-);
 
-<<<<<<< HEAD
--- i.
-SELECT t.cod_nomenclador,
-=======
+-- Recibe(CUIL, DOC,  m_prov, m_nac, cod_nomneclador, tiene_profesional)
+
+
+/*
+
+
+
+
+
+C O N S U L T A S
+
+
+
+
+
+*/
+
+
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
 select 
     t.cod_nomenclador,
->>>>>>> b6b5415d2f496848eb34d36111587bad8ce0249a
     t.descripcion,
-    COUNT(t.cod_nomeclador) AS cantidad_efectos FROM
+    count(t.cod_nomeclador) as cantidad_efectos
+from
     Tratamiento t
-        JOIN
+        join
     produce p ON t.cod_nomenclador = p.cod_nomenclador
-WHERE
-    COUNT(t.cod_nomeclador) > 10
-GROUP BY t.cod_nomenclador
-ORDER BY COUNT(t.cod_nomeclador) DESC;
+where
+    count(t.cod_nomeclador) > 10
+group by t.cod_nomenclador
+order by count(t.cod_nomeclador) desc;
 
 -- /*ii. Cantidad de personas con algún tratamiento diagnóstico que no haya confirmado el diagnóstico. */ 
   
@@ -382,3 +370,11 @@ select T.descripcion, count(T.cod_nomenclador) as Cantidad_de_muertes_desde_2021
 from Tratamiento T join Produce P on T.cod_nomenclador = P.cod_nomenclador join Efecto_adverso E on P.cod = E.cod
 where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '2023-12-31'
 order by T.descripcion;
+
+
+/* ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
+considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
+50 años, 51-70 años, 71-90 años, 91 o más años.
+ */
+ 
+ 
