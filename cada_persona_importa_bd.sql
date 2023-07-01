@@ -308,15 +308,15 @@ CREATE TABLE Trat_produce_efec_esperado (
         REFERENCES Efectos_esperados (cod)
 );
 
-<<<<<<< HEAD
+
 -- i.
 SELECT t.cod_nomenclador,
-=======
+
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
 select 
     t.cod_nomenclador,
->>>>>>> b6b5415d2f496848eb34d36111587bad8ce0249a
+
     t.descripcion,
     COUNT(t.cod_nomeclador) AS cantidad_efectos FROM
     Tratamiento t
@@ -382,3 +382,20 @@ select T.descripcion, count(T.cod_nomenclador) as Cantidad_de_muertes_desde_2021
 from Tratamiento T join Produce P on T.cod_nomenclador = P.cod_nomenclador join Efecto_adverso E on P.cod = E.cod
 where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '2023-12-31'
 order by T.descripcion;
+
+
+/*vi. Formulen una consulta que permita a un profesional médico descartar un
+tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
+guardarían para realizar esta comparación? Incluirla en el modelo completo.*/
+
+
+SELECT R.cod_nomenclador, t.descripcion AS "tratamiento", YEAR(p.f_nac)
+FROM Persona P JOIN Recibe R on P.CUIL = R.CUIL
+AND p.f_nac >"2013-01-01"
+WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
+							FROM Tratamiento t JOIN Produce p on t.cod_nomenclador=p.cod_nomenclador
+                            JOIN Efecto_Adverso EF on EF.cod=p.cod
+                            WHERE (SELECT COUNT(*)
+                                   FROM Efecto_Adverso E
+                                   GROUP BY E.cod
+                                   having count(E.cod)> 5 ));
