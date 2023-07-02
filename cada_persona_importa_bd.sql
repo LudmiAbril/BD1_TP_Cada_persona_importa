@@ -386,7 +386,18 @@ considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 a
 50 años, 51-70 años, 71-90 años, 91 o más años.
  */
  
- 
+select T.cod_nomenclador, T.descripcion
+from Persona P join Recibe R on P.CUIL = R.CUIL and P.DNI = R.DNI join Tratamiento T 
+on R.cod_nomenclador = T.cod_nomenclador
+where exists( select 1
+from Produce P join Efecto E on P.cod=E.cod join Tipo_efecto TE on E.nro_tipo = TE.nro
+where P.cod_nomenclador = T.cod_nomenclador and TE.nombre like 'severo')
+and ( year(P.fecha_nac) = '2023' or year(P.fecha_nac) between '2022' and '2018'
+ or year(P.fecha_nac) between '2017' and '2011' or year(P.fecha_nac) between '2010' and '2006'
+ or year(P.fecha_nac) between '2007' and '1998' or year(P.fecha_nac) between '1996' and '1983'
+ or year(P.fecha_nac) between '1984' and '1973' or year(P.fecha_nac) between '1974' and '1953'
+ or year(P.fecha_nac) between '1954' and '1933' or year(P.fecha_nac) >= '1934');
+
 
 -- Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
 -- edad > 18
