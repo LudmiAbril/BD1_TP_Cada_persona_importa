@@ -309,17 +309,28 @@ CREATE TABLE Trat_produce_efec_esperado (
 
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
-select 
-    t.cod_nomenclador,
-    t.descripcion,
-    COUNT(t.cod_nomenclador) AS cantidad_efectos FROM
-    Tratamiento t
-        JOIN
-    produce p ON t.cod_nomenclador = p.cod_nomenclador
-WHERE
-    COUNT(t.cod_nomenclador) > 10
+select t.cod_nomenclador, t.descripcion, COUNT(t.cod_nomenclador) AS cantidad_efectos 
+FROM Tratamiento t
+        JOIN produce p ON t.cod_nomenclador = p.cod_nomenclador
+WHERE COUNT(t.cod_nomenclador) > 10
 GROUP BY t.cod_nomenclador
 ORDER BY COUNT(t.cod_nomenclador) DESC;
+
+/*consulta celes g
+-- Agregar columna 'cant_efectos' en la tabla Tratamiento
+ALTER TABLE Tratamiento ADD COLUMN cant_efectos INT DEFAULT 0;
+
+-- Actualizar la cantidad de efectos adversos para cada tratamiento
+UPDATE Tratamiento
+SET cant_efectos = (SELECT COUNT(*) FROM Produce WHERE Produce.cod_nomenclador = Tratamiento.cod_nomenclador);
+
+-- Consulta del Top 10 de tratamientos con más de 10 efectos adversos
+SELECT cod_nomenclador, descripcion, cant_efectos
+FROM Tratamiento
+WHERE cant_efectos >= 10
+ORDER BY cant_efectos DESC;
+
+*/
 
 -- /*ii. Cantidad de personas con algún tratamiento diagnóstico que no haya confirmado el diagnóstico. */ 
   
@@ -413,6 +424,31 @@ values
 insert into Produce (cod_nomenclador, cod)
 value (6, 1);
 
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (6, 1), (6, 2);
+
+/**/
+insert into Efectos_esperados(cod, nombre, f_ocurrencia)
+values
+(3, 'Reducción de la fiebre', '2023-05-07'),
+(4, 'Alivio del dolor', '2023-05-13');
+
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (1, 1), (1, 2);
+
+insert into Efecto_adverso (cod, nombre, f_ocurrencia, nro_tipo)
+values
+(2, 'Sangrado gastrointestinal',  '2023-05-07', 1);
+
+insert into Produce (cod_nomenclador, cod)
+value (1, 2);
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (1, 3), (1, 4);
+
+INSERT INTO Recibe (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador, tiene_profesional)
+VALUES (111111111, 111111111, 987654321, 111111111, 1, true);
 
 SELECT DISTINCT t.cod_nomenclador, t.descripcion
 FROM Tratamiento t
@@ -420,7 +456,7 @@ INNER JOIN Trat_produce_efec_esperado tpee ON t.cod_nomenclador = tpee.cod_nomen
 INNER JOIN tiene_PDA tp ON tpee.cod_nomenclador = tp.cod_uni
 INNER JOIN Persona p ON tp.CUIL = p.CUIL AND tp.DNI = p.DNI
 WHERE t.es_invasivo = false -- Tratamientos de bajo riesgo
-AND YEAR(p.f_nac) <= YEAR(DATE_SUB(CURDATE(), INTERVAL 65 YEAR)) -- Adultos mayores (mayores de 65 años)
+AND YEAR(p.f_nac) <= YEAR(DATE_SUB(CURDATE(), INTERVAL 18 YEAR)) -- Adultos mayores (mayores de 18 años)
 GROUP BY t.cod_nomenclador, t.descripcion
 HAVING COUNT(DISTINCT tp.cod_uni) >= 2; -- Al menos 2 patologías preexistentes
 
@@ -428,7 +464,7 @@ HAVING COUNT(DISTINCT tp.cod_uni) >= 2; -- Al menos 2 patologías preexistentes
 
 
 
-/*consulta de las chicas
+/* V. consulta que hicimos en grupo
 SELECT t.descripcion
 from Tratamiento t join Recibe r on t.cod_nomenclador = r.cod_nomenclador
 join Persona p on p.CUIL =r.CUIL  and p.DNI =r.DNI 
