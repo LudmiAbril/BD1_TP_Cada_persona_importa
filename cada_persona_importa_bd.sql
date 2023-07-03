@@ -1,24 +1,24 @@
 /*
-i. Top 10 de tratamientos con más de 10 efectos adversos. LISTO NO DA 
+i. Top 10 de tratamientos con más de 10 efectos adversos. LISTO
 ii. Cantidad de personas con algún tratamiento diagnóstico que no haya confirmado el
 diagnóstico. LISTO
 iii. ¿Cuántas personas ha habido que hayan tenido la mayor cantidad de efectos
 adversos de algún tratamiento de vacunación? LISTO
 iv. ¿Cuántas muertes ocurrieron relacionadas con vacunas, agrupando por vacuna,
-durante los años 2021 al 2023?
+durante los años 2021 al 2023? LISTO
 v. ¿Cuántas muertes de recién nacidos se pueden relacionar a medicamentos
 administrados a la madre? Si el modelo realizado no permite contestar esta
 pregunta, modificarlo para poder hacerlo. LISTO
 vi. Formulen una consulta que permita a un profesional médico descartar un
 tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
-guardarían para realizar esta comparación? Incluirla en el modelo completo.
+guardarían para realizar esta comparación? Incluirla en el modelo completo. LISTO
 vii. Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2
-(dos) patologías preexistentes y que sean adultos mayores. NO DA
+(dos) patologías preexistentes y que sean adultos mayores. LISTO
 viii. Formular una consulta que Uds. Le harían a la app para saber si realizarse un
-tratamiento.
+tratamiento. CORREGIR
 ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
 considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
-50 años, 51-70 años, 71-90 años, 91 o más años.
+50 años, 51-70 años, 71-90 años, 91 o más años. LISTO
 */
 
 -- Modelado
@@ -509,35 +509,35 @@ VALUES (6, 1), (6, 2);
 INSERT INTO Recibe (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador, tiene_profesional)
 VALUES (111111111, 111111111, 987654321, 111111111, 1, true);
 
-/* V. consulta que hicimos en grupo
-SELECT t.descripcion
-from Tratamiento t join Recibe r on t.cod_nomenclador = r.cod_nomenclador
-join Persona p on p.CUIL =r.CUIL  and p.DNI =r.DNI 
-join Tiene ti on ti.CUIL = p.CUIL and ti.DNI = p.DNI 
+/*V. ¿Cuántas muertes de recién nacidos se pueden relacionar a medicamentos
+administrados a la madre? Si el modelo realizado no permite contestar esta
+pregunta, modificarlo para poder hacerlo.*/
 
-where year(p.f_nac)='2005' 
-group by ti.cod
-having count (ti.cod)>=2;*/
+select count(*) AS total_muertes
+from Persona h
+join es_hijo_de esd on h.cuil= esd.cuil and h.dni=esd.dni
+join Persona m on esd.cuil_p = m.cuil and esd.dni_p = m.dni
+where YEAR(CURRENT_DATE()) - YEAR(h.f_nac) = 0 and exists (
+select 1
+from Recibe r 
+where r.dni = m.dni and r.cuil = m.cuil
+) and exists (
+select 1
+from Padece p join Evento e on e.cod= p.cod
+where p.cuil= h.cuil and p.dni =h.dni
+and E.descripcion like 'Muerte'
+);
 
 /*vi. Formulen una consulta que permita a un profesional médico descartar un
 tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
-guardarían para realizar esta comparación? Incluirla en el modelo completo.*/
-SELECT R.cod_nomenclador, t.descripcion AS "tratamiento", YEAR(p.f_nac)
-FROM Persona P JOIN Recibe R on P.CUIL = R.CUIL
-
-
-
-
+guardarían para realizar esta comparación? Incluirla en el modelo completo.
+ */
+ 
 /*
-
-vi. Formulen una consulta que permita a un profesional médico descartar un
-tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
-guardarían para realizar esta comparación? Incluirla en el modelo completo */
-
 SELECT R.cod_nomenclador, T.descripcion AS "tratamiento", YEAR(p.f_nac)
 FROM Persona P JOIN Recibe R on P.CUIL = R.CUIL 
 join Tratamiento T on T.cod_nomenclador= R.cod_nomenclador
-AND p.f_nac >"2013-01-01"
+AND p.f_nac >'2006-01-01'
 WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
 							FROM Tratamiento t JOIN Produce p on t.cod_nomenclador=p.cod_nomenclador
                             JOIN Efecto_Adverso EF on EF.cod=p.cod
@@ -545,6 +545,42 @@ WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
                                    FROM Efecto_Adverso E
                                    GROUP BY E.cod
                                    having count(E.cod)> 5 ));
+                                   */
+						
+
+SELECT 
+    t.cod_nomenclador, t.descripcion
+FROM
+    persona p
+        JOIN
+    recibe r ON p.dni = r.dni AND p.cuil = r.cuil
+        JOIN
+    tratamiento t ON r.cod_nomenclador = t.cod_nomenclador
+        JOIN
+    produce x ON t.cod_nomenclador = x.cod_nomenclador
+        JOIN
+    efecto_adverso ea ON x.cod = ea.cod
+WHERE
+    YEAR(CURRENT_DATE()) - YEAR(p.f_nac) <= 12
+GROUP BY t.cod_nomenclador
+HAVING COUNT(t.cod_nomenclador) < (SELECT 
+        COUNT(*)
+    FROM
+        persona p2
+            JOIN
+        recibe r2 ON p2.dni = r2.dni AND p2.cuil = r2.cuil
+            JOIN
+        tratamiento t2 ON r2.cod_nomenclador = t2.cod_nomenclador
+            JOIN
+        trat_produce_efec_esperado tpee ON t2.cod_nomenclador = tpee.cod_nomenclador
+    WHERE
+        YEAR(CURRENT_DATE()) - YEAR(p2.f_nac) <= 12 and t2.cod_nomenclador = t.cod_nomenclador);
+                                  
+                                   
+                                   
+                                   
+                                   
+                                   
                                    
 -- viii. Formular una consulta que Uds. Le harían a la app para saber si se realizó un tratamiento.
 select *
@@ -559,45 +595,39 @@ where r.cod_nomenclador = t.cod_nomenclador);
 select t.descripcion, t.es_invasivo, t.parte_cuerpo_aplicacion
 from tratamiento t;
 
+-- INSERTANDO!!
+
+-- insertado
 /*Probando*/
 alter table Evento add column  f_ocurrencia DATE;
 -- Inserción 1
 
+-- insertado
 /* consulta numero 5*/
 insert into Persona(CUIL, DNI, f_nac)
 values
 (35666772222, 899000000, '1998-06-09'),
 (3234555555, 99999999999, '2023-07-01');
 
+-- insertado
 insert into Es_hijo_de(CUIL, DNI, CUIL_P, DNI_P)
 VALUES
 (3234555555, 99999999999, 35666772222, 899000000);
 
+-- insertado
 INSERT INTO Recibe (CUIL, DNI, cod_nomenclador,   mat_nacional , mat_provincial ,tiene_profesional)
 values
 (35666772222, 899000000, 3, 987654321, 111111111, true);
 
+-- insertado
 INSERT INTO Evento (cod, descripcion, f_ocurrencia)
 VALUES (1, 'Muerte', '2023-01-01'); 
 
+-- insertado
 INSERT INTO Padece (CUIL, DNI, cod)
 values
 (3234555555, 99999999999,1);
 
 
 
-select count(*) AS total_muertes
-from Persona h
-join es_hijo_de esd on h.cuil= esd.cuil and h.dni=esd.dni
-join Persona m on esd.cuil_p = m.cuil and esd.dni_p = m.dni
-where datediff(current_date(), h.f_nac) * 365 <30 and exists (
-select 1
-from Recibe r 
-where r.dni = m.dni and r.cuil = m.cuil
-) and exists (
-select 1
-from Padece p join Evento e on e.cod= p.cod
-where p.cuil= h.cuil and p.dni =h.dni
-and E.descripcion like 'Muerte'
-);
 
