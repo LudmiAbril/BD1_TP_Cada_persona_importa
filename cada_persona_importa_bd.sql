@@ -307,22 +307,9 @@ CREATE TABLE Trat_produce_efec_esperado (
     CONSTRAINT Trat_produce_efec_esperado_cod_FK FOREIGN KEY (cod)
         REFERENCES Efectos_esperados (cod)
 );
-
-<<<<<<< HEAD
-=======
-
--- i.
-SELECT t.cod_nomenclador,
-
->>>>>>> 3de26bee8477f7039bd230514db1e17585e4971c
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
-
 select 
     t.cod_nomenclador,
-<<<<<<< HEAD
-=======
-
->>>>>>> 3de26bee8477f7039bd230514db1e17585e4971c
     t.descripcion,
     COUNT(t.cod_nomeclador) AS cantidad_efectos FROM
     Tratamiento t
@@ -389,8 +376,7 @@ from Tratamiento T join Produce P on T.cod_nomenclador = P.cod_nomenclador join 
 where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '2023-12-31'
 order by T.descripcion;
 
-<<<<<<< HEAD
--- Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
+-- vii. Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
 -- edad > 18
 -- de bajo riesgo: que tiene más efectos esperados que efectos adversos
 -- cuando la cantidad de efectos esperados es mayor a la cantidad de efectos adversos es de bajo riesgo
@@ -407,16 +393,9 @@ where year(f_nac) = 2005
 group by t.cod_ante
 having count >= 2)
 
-
-
-
-=======
-
 /*vi. Formulen una consulta que permita a un profesional médico descartar un
 tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
 guardarían para realizar esta comparación? Incluirla en el modelo completo.*/
-
-
 SELECT R.cod_nomenclador, t.descripcion AS "tratamiento", YEAR(p.f_nac)
 FROM Persona P JOIN Recibe R on P.CUIL = R.CUIL
 AND p.f_nac >"2013-01-01"
@@ -427,4 +406,20 @@ WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
                                    FROM Efecto_Adverso E
                                    GROUP BY E.cod
                                    having count(E.cod)> 5 ));
->>>>>>> 3de26bee8477f7039bd230514db1e17585e4971c
+                                   
+-- viii. Formular una consulta que Uds. Le harían a la app para saber si se realizó un tratamiento.
+select *
+from tratamiento t 
+where exists 
+(select 1 
+from recibe r join persona p on r.dni = p.dni and r.cuil = p.cuil
+where r.cod_nomenclador = t.cod_nomenclador);
+
+-- Formular una consulta que Uds. Le harían a la app para saber si se realizarían un tratamiento.
+
+select t.descripcion, t.es_invasivo, t.parte_cuerpo_aplicacion
+from tratamiento t;
+
+
+
+
