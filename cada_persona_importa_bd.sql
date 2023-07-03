@@ -60,7 +60,6 @@ CREATE TABLE Persona (
     CONSTRAINT Persona_PK PRIMARY KEY (CUIL , DNI)
 );
 
-<<<<<<< HEAD
 create table Es_hijo_de (
 CUIL BIGINT,
 DNI BIGINT,
@@ -71,8 +70,6 @@ constraint Es_hijo_de_FK foreign key (CUIL_P, DNI_P) references Persona (CUIL, D
 constraint e_hijo_de_FK foreign key (CUIL, DNI) references Persona (CUIL, DNI)
 );
 
-=======
->>>>>>> refs/remotes/origin/main
 INSERT INTO Persona (CUIL, DNI, f_nac)
 VALUES 
     (111111111, 111111111, '1995-05-10'),
@@ -90,8 +87,6 @@ VALUES
     (456789012, 654321098, '2020-12-14'),
     (567890123, 543210987, '2013-09-30'),
     (678901234, 432109876, '2010-06-24');
-<<<<<<< HEAD
-=======
 
 INSERT INTO Persona (CUIL, DNI)
 VALUES (20345678902, 50123456),
@@ -376,25 +371,19 @@ constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references T
 constraint cod_FK_produce foreign key (cod) references Efecto_adverso(cod)
 );
 
-<<<<<<< HEAD
-=======
 insert into Produce (cod_nomenclador, cod)
 value (1, 2);
 
 insert into Produce (cod_nomenclador, cod)
 value (6, 1);
 
->>>>>>> refs/remotes/origin/main
 create table Se_realizan (
 cod_nomenclador INT,
 nro INT,
 constraint cod_nomenclador_nro_PK_Se_realizan primary key (cod_nomenclador, nro),
 constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
 constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
-<<<<<<< HEAD
-=======
 
->>>>>>> refs/remotes/origin/main
  );
     
     create table Efectos_esperados ( 
@@ -442,20 +431,17 @@ VALUES (1, 1), (1, 2);
 INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
 VALUES (1, 3), (1, 4);
 
-<<<<<<< HEAD
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (6, 1), (6, 2);
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (6, 1), (6, 2);
+
 -- Consulta del Top 10 de tratamientos con más de 10 efectos adversos
-SELECT cod_nomenclador, descripcion, cant_efectos
+/*SELECT cod_nomenclador, descripcion, cant_efectos
 FROM Tratamiento
 WHERE cant_efectos >= 10
-ORDER BY cant_efectos DESC;
-
 */
-=======
-INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
-VALUES (6, 1), (6, 2);
-
-INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
-VALUES (6, 1), (6, 2);
 
 /*
 
@@ -472,14 +458,12 @@ C O N S U L T A S
 */
 
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
-
 select t.cod_nomenclador, t.descripcion, COUNT(t.cod_nomenclador) AS cantidad_efectos 
 FROM Tratamiento t
         JOIN produce p ON t.cod_nomenclador = p.cod_nomenclador
 GROUP BY t.cod_nomenclador
 having COUNT(t.cod_nomenclador) > 10
 ORDER BY COUNT(t.cod_nomenclador) DESC;
->>>>>>> refs/remotes/origin/main
 
 -- /*ii. Cantidad de personas con algún tratamiento diagnóstico que no haya confirmado el diagnóstico. */ 
   
@@ -664,7 +648,7 @@ VALUES (1, 'Muerte', '2023-01-01');
 INSERT INTO Padece (CUIL, DNI, cod)
 values
 (3234555555, 99999999999,1);
-=======
+
 group by T.descripcion
 order by t.descripcion;
 
@@ -688,8 +672,6 @@ where p.cuil= h.cuil and p.dni =h.dni
 and E.descripcion like 'Muerte'
 );
 
-<<<<<<< HEAD
-alter table Tratamiento add column edad_minima_aplicacion int not null;
 SELECT T.cod_nomenclador, T.descripcion AS tratamiento, 
        COUNT(EE.cod) AS cantidad_efectos_esperados, 
        COUNT(EA.cod) AS cantidad_efectos_adversos
