@@ -259,7 +259,19 @@ insert into Efecto_adverso (cod, nombre, f_ocurrencia, nro_tipo)
 values
 (2, 'Sangrado gastrointestinal',  '2023-05-07', 1);
 
-insert into Efecto_adverso(cod, nombre, f_ocurrencia, nro_tipo) values ();
+insert into Efecto_adverso(cod, nombre, f_ocurrencia, nro_tipo) 
+values
+ (3,'infeccion en el ojo','2006-05-08',2),
+ (4,'inflamacion ojooperado','2006-08-08',2),
+ (5,'hemorragia en el ojo','2020-05-07',2),
+ (6,'aumento de la presión ocular','2021-06-08',2),
+(7,'desprendimiento de retina','2021-06-09',3),
+(8,'edema macular','2019-04-08',3),
+(9,'opacidad de la cápsula posterior','2018-04-09',3),
+(10,'distorción visua','2021-07-02',3),
+(11,'dislocación del lente intraocular','2015-4-06',3),
+(12,'problemas refractivos','2006-01-24',3);
+
 
 -- ternaria entre persona, diag, antecedente
 CREATE TABLE tiene_PDA (
