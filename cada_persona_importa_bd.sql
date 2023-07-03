@@ -234,6 +234,8 @@ id int, nombre varchar (25), cod_nomenclador INT PRIMARY KEY,
 constraint cod_nomenclador_fk_fab foreign key (cod_nomenclador)
         REFERENCES Tratamiento (cod_nomenclador));
         
+insert into Fabricante (id, nombre, cod_nomenclador) values (1, 'Johnson & Johnson', 7), (2, 'Pfizer', 4), (3, 'Sandoz', 9), (4, 'Merck', 12), (5, 'Bayer', 1);
+        
 create table Antecedente(
 cod int primary key,
 descripcion varchar(30)
