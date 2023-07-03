@@ -118,7 +118,6 @@ constraint e_hijo_de_FK foreign key (CUIL, DNI) references Persona (CUIL, DNI)
 insert into Es_hijo_de(CUIL, DNI, CUIL_P, DNI_P)
 VALUES
 (3234555555, 99999999999, 35666772222, 899000000);
->>>>>>> refs/remotes/origin/main
 
 CREATE TABLE Evento (
     cod INT PRIMARY KEY,
@@ -391,7 +390,6 @@ constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
 nombre varchar(35),
 f_ocurrencia date);
 
-<<<<<<< HEAD
 CREATE TABLE Trat_produce_efec_esperado (
     cod_nomenclador INT,
     cod INT,
@@ -403,7 +401,7 @@ CREATE TABLE Trat_produce_efec_esperado (
 );
 
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
-=======
+
 insert into Efectos_esperados(cod, nombre, f_ocurrencia)
 values
 (1, 'Mejora la vision', '2023-05-07'),
@@ -413,7 +411,6 @@ insert into Efectos_esperados(cod, nombre, f_ocurrencia)
 values
 (3, 'Reducción de la fiebre', '2023-05-07'),
 (4, 'Alivio del dolor', '2023-05-13');
->>>>>>> refs/remotes/origin/main
 
 CREATE TABLE Trat_produce_efec_esperado (
     cod_nomenclador INT,
@@ -518,9 +515,7 @@ durante los años 2021 al 2023? */
 select T.descripcion, count(T.cod_nomenclador) as Cantidad_de_muertes_desde_2021_a_2023
 from Tratamiento T join Produce P on T.cod_nomenclador = P.cod_nomenclador join Efecto_adverso E on P.cod = E.cod
 where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '2023-12-31'
-<<<<<<< HEAD
 order by T.descripcion;
-
 
 -- Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
 -- edad > 18
@@ -655,7 +650,7 @@ order by t.descripcion;
 /*V. ¿Cuántas muertes de recién nacidos se pueden relacionar a medicamentos
 administrados a la madre? Si el modelo realizado no permite contestar esta
 pregunta, modificarlo para poder hacerlo.*/
->>>>>>> refs/remotes/origin/main
+
 
 select count(*) AS total_muertes
 from Persona h
@@ -687,7 +682,7 @@ WHERE T.es_invasivo = false
   AND T.edad_minima_aplicacion <= 18 
 GROUP BY T.cod_nomenclador, T.descripcion
 HAVING COUNT(EA.cod) > COUNT(EE.cod); 
-=======
+
 /*vi. Formulen una consulta que permita a un profesional médico descartar un
 tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
 guardarían para realizar esta comparación? Incluirla en el modelo completo.
@@ -774,6 +769,3 @@ and ( year(P.f_nac) = '2023' or year(P.f_nac) between '2022' and '2018'
   group by t.cod_nomenclador, p.f_nac
  order by p.f_nac desc;
 
-
-
->>>>>>> refs/remotes/origin/main
