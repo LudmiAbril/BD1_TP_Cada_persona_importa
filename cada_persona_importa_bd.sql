@@ -15,7 +15,7 @@ guardarían para realizar esta comparación? Incluirla en el modelo completo. LI
 vii. Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2
 (dos) patologías preexistentes y que sean adultos mayores. LISTO
 viii. Formular una consulta que Uds. Le harían a la app para saber si realizarse un
-tratamiento. CORREGIR
+tratamiento. LISTO
 ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
 considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
 50 años, 51-70 años, 71-90 años, 91 o más años. LISTO
@@ -578,11 +578,9 @@ HAVING COUNT(t.cod_nomenclador) < (SELECT
                                   
                                    
                                    
-                                   
-                                   
-                                   
-                                   
+
 -- viii. Formular una consulta que Uds. Le harían a la app para saber si se realizó un tratamiento.
+-- busca si se registro correctamente el tratamiento 
 select *
 from tratamiento t 
 where exists 
@@ -591,7 +589,7 @@ from recibe r join persona p on r.dni = p.dni and r.cuil = p.cuil
 where r.cod_nomenclador = t.cod_nomenclador);
 
 -- Formular una consulta que Uds. Le harían a la app para saber si se realizarían un tratamiento.
-
+-- ver info del tratamiento y el usuario decide si se ajusta a lo que busca
 select t.descripcion, t.es_invasivo, t.parte_cuerpo_aplicacion
 from tratamiento t;
 
