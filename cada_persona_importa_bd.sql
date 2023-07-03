@@ -56,10 +56,10 @@ Creacion de tablas e inserción de datos
 CREATE TABLE Persona (
     CUIL BIGINT,
     DNI BIGINT,
-    f_nac date,
     CONSTRAINT Persona_PK PRIMARY KEY (CUIL , DNI)
 );
 
+<<<<<<< HEAD
 create table Es_hijo_de (
 CUIL BIGINT,
 DNI BIGINT,
@@ -87,6 +87,20 @@ VALUES
     (456789012, 654321098, '2020-12-14'),
     (567890123, 543210987, '2013-09-30'),
     (678901234, 432109876, '2010-06-24');
+=======
+INSERT INTO Persona (CUIL, DNI)
+VALUES (20345678902, 50123456),
+       (20456789013, 60123456),
+       (20567890124, 70123456),
+       (20678901235, 80123456),
+       (20789012346, 90123456),
+       (20890123457, 10012345),
+       (20901234568, 11012345),
+       (21012345679, 12012345),
+       (21123456780, 13012345),
+       (21234567891, 14012345);
+
+>>>>>>> b143e5e12feb0af31e0891119ff4b6ac6a8b2a65
 
 CREATE TABLE Evento (
     cod INT PRIMARY KEY,
@@ -284,29 +298,30 @@ constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references T
 constraint cod_FK_produce foreign key (cod) references Efecto_adverso(cod)
 );
 
+-- Se_realizan.cod_nomneclador -> Tratamiento.cod_nomneclador
+-- Se_realizan.nro -> Centro_salud.nro
+
+-- Se_realizan(cod_nomenclador, nro)
 create table Se_realizan (
 cod_nomenclador INT,
 nro INT,
 constraint cod_nomenclador_nro_PK_Se_realizan primary key (cod_nomenclador, nro),
 constraint cod_nomenclador_FK_Se_realizan foreign key (cod_nomenclador) references Tratamiento (cod_nomenclador),
 constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
+<<<<<<< HEAD
  );
     
     create table Efectos_esperados ( 
     cod int primary key, 
 nombre varchar(35),
 f_ocurrencia date);
+=======
+   
+    );
+>>>>>>> b143e5e12feb0af31e0891119ff4b6ac6a8b2a65
 
-CREATE TABLE Trat_produce_efec_esperado (
-    cod_nomenclador INT,
-    cod INT,
-    CONSTRAINT Trat_produce_efec_esperado_PK PRIMARY KEY (cod_nomenclador , cod),
-    CONSTRAINT Trat_produce_efec_esperado_FK FOREIGN KEY (cod_nomenclador)
-        REFERENCES Tratamiento (cod_nomenclador),
-    CONSTRAINT Trat_produce_efec_esperado_cod_FK FOREIGN KEY (cod)
-        REFERENCES Efectos_esperados (cod)
-);
 
+<<<<<<< HEAD
 /*i. Top 10 de tratamientos con más de 10 efectos adversos. */
 
 select t.cod_nomenclador, t.descripcion, COUNT(t.cod_nomenclador) AS cantidad_efectos 
@@ -331,6 +346,48 @@ WHERE cant_efectos >= 10
 ORDER BY cant_efectos DESC;
 
 */
+=======
+
+-- Recibe(CUIL, DOC,  m_prov, m_nac, cod_nomneclador, tiene_profesional)
+
+
+/*
+
+
+
+
+
+C O N S U L T A S
+
+
+
+
+
+*/
+
+
+
+
+-- i.
+SELECT t.cod_nomenclador,
+
+
+/*i. Top 10 de tratamientos con más de 10 efectos adversos. */
+
+select 
+    t.cod_nomenclador,
+
+    t.descripcion,
+    count(t.cod_nomeclador) as cantidad_efectos
+from
+    Tratamiento t
+        join
+    produce p ON t.cod_nomenclador = p.cod_nomenclador
+where
+    count(t.cod_nomeclador) > 10
+group by t.cod_nomenclador
+order by count(t.cod_nomeclador) desc;
+>>>>>>> b143e5e12feb0af31e0891119ff4b6ac6a8b2a65
 
 -- /*ii. Cantidad de personas con algún tratamiento diagnóstico que no haya confirmado el diagnóstico. */ 
   
@@ -389,6 +446,28 @@ where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '
 order by T.descripcion;
 
 
+<<<<<<< HEAD
+=======
+
+/* ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
+considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
+50 años, 51-70 años, 71-90 años, 91 o más años.
+ */
+ 
+select T.cod_nomenclador, T.descripcion
+from Persona P join Recibe R on P.CUIL = R.CUIL and P.DNI = R.DNI join Tratamiento T 
+on R.cod_nomenclador = T.cod_nomenclador
+where exists( select 1
+from Produce P join Efecto E on P.cod=E.cod join Tipo_efecto TE on E.nro_tipo = TE.nro
+where P.cod_nomenclador = T.cod_nomenclador and TE.nombre like 'severo')
+and ( year(P.fecha_nac) = '2023' or year(P.fecha_nac) between '2022' and '2018'
+ or year(P.fecha_nac) between '2017' and '2011' or year(P.fecha_nac) between '2010' and '2006'
+ or year(P.fecha_nac) between '2007' and '1998' or year(P.fecha_nac) between '1996' and '1983'
+ or year(P.fecha_nac) between '1984' and '1973' or year(P.fecha_nac) between '1974' and '1953'
+ or year(P.fecha_nac) between '1954' and '1933' or year(P.fecha_nac) >= '1934');
+
+
+>>>>>>> b143e5e12feb0af31e0891119ff4b6ac6a8b2a65
 -- Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
 -- edad > 18
 -- de bajo riesgo: que tiene más efectos esperados que efectos adversos
@@ -463,6 +542,10 @@ HAVING COUNT(DISTINCT tp.cod_uni) >= 2; -- Al menos 2 patologías preexistentes
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> b143e5e12feb0af31e0891119ff4b6ac6a8b2a65
 
 /* V. consulta que hicimos en grupo
 SELECT t.descripcion
@@ -494,6 +577,7 @@ WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
                                    GROUP BY E.cod
                                    having count(E.cod)> 5 ));
 
+<<<<<<< HEAD
 /*Probando*/
 alter table Evento add column  f_ocurrencia DATE;
 -- Inserción 1
@@ -535,3 +619,5 @@ from Padece p join Evento e on e.cod= p.cod
 where p.cuil= h.cuil and p.dni =h.dni
 and E.descripcion like 'Muerte'
 );
+=======
+>>>>>>> b143e5e12feb0af31e0891119ff4b6ac6a8b2a65
