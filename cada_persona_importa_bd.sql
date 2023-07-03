@@ -60,16 +60,6 @@ CREATE TABLE Persona (
     CONSTRAINT Persona_PK PRIMARY KEY (CUIL , DNI)
 );
 
-create table Es_hijo_de (
-CUIL BIGINT,
-DNI BIGINT,
-CUIL_P bigint,
-DNI_P bigint,
-constraint Es_hijo_de_PK primary key (CUIL, DNI, CUIL_P, DNI_P),
-constraint Es_hijo_de_FK foreign key (CUIL_P, DNI_P) references Persona (CUIL, DNI),
-constraint e_hijo_de_FK foreign key (CUIL, DNI) references Persona (CUIL, DNI)
-);
-
 INSERT INTO Persona (CUIL, DNI, f_nac)
 VALUES 
     (111111111, 111111111, '1995-05-10'),
@@ -99,12 +89,35 @@ VALUES (20345678902, 50123456),
        (21012345679, 12012345),
        (21123456780, 13012345),
        (21234567891, 14012345);
+       
+insert into Persona(CUIL, DNI, f_nac)
+values
+(35666772222, 899000000, '1998-06-09'),
+(3234555555, 99999999999, '2023-07-01');
+
+create table Es_hijo_de (
+CUIL BIGINT,
+DNI BIGINT,
+CUIL_P bigint,
+DNI_P bigint,
+constraint Es_hijo_de_PK primary key (CUIL, DNI, CUIL_P, DNI_P),
+constraint Es_hijo_de_FK foreign key (CUIL_P, DNI_P) references Persona (CUIL, DNI),
+constraint e_hijo_de_FK foreign key (CUIL, DNI) references Persona (CUIL, DNI)
+);
+
+insert into Es_hijo_de(CUIL, DNI, CUIL_P, DNI_P)
+VALUES
+(3234555555, 99999999999, 35666772222, 899000000);
 
 CREATE TABLE Evento (
     cod INT PRIMARY KEY,
     descripcion VARCHAR(35)
 );
 
+INSERT INTO Evento (cod, descripcion, f_ocurrencia)
+VALUES (1, 'Muerte', '2023-01-01'); 
+
+alter table Evento add column  f_ocurrencia DATE;
 
 CREATE TABLE Profesional (
     nombre VARCHAR(15),
@@ -155,6 +168,9 @@ CREATE TABLE Diag (
     descripcion VARCHAR(50)
 );
 
+INSERT INTO Diag (cod_uni, descripcion)
+VALUES (1, 'Patología 1'), (2, 'Patología 2');
+
 CREATE TABLE Contraindicaciones (
     id INT PRIMARY KEY,
     descripcion VARCHAR(50)
@@ -164,6 +180,10 @@ CREATE TABLE Tipo_efecto (
     nro INT PRIMARY KEY,
     nombre VARCHAR(35)
 );
+
+insert into Tipo_efecto (nro, nombre)
+values
+(1, 'Leve'), (2, 'Moderado'), (3, 'Severo'), (4, 'Muerte');
 
 CREATE TABLE Especialidad (
     cod INT PRIMARY KEY,
@@ -219,6 +239,10 @@ cod int primary key,
 descripcion varchar(30)
 );
 
+insert into Antecedente(cod,descripcion )
+value
+(1, 'Dolor de cabeza'), (2, 'Mareos');
+
 create table Efecto_adverso(
 cod int primary key, 
 nombre varchar(35),
@@ -226,6 +250,16 @@ f_ocurrencia date,
 nro_tipo int,
 constraint nro_fk_efec_adv foreign key(nro_tipo) references Tipo_efecto (nro)
 );
+
+insert into Efecto_adverso (cod, nombre, f_ocurrencia, nro_tipo)
+values
+(1, 'Disminucion de la vista',  '2023-05-07',1);
+
+insert into Efecto_adverso (cod, nombre, f_ocurrencia, nro_tipo)
+values
+(2, 'Sangrado gastrointestinal',  '2023-05-07', 1);
+
+insert into Efecto_adverso(cod, nombre, f_ocurrencia, nro_tipo) values ();
 
 -- ternaria entre persona, diag, antecedente
 CREATE TABLE tiene_PDA (
@@ -241,6 +275,9 @@ CREATE TABLE tiene_PDA (
     CONSTRAINT cod_ante_fk_tiene_PDA FOREIGN KEY (cod_ante)
         REFERENCES Antecedente (cod)
 );
+
+INSERT INTO tiene_PDA (CUIL, DNI, cod_uni, cod_ante)
+VALUES (111111111, 111111111, 1, 1), (111111111, 111111111, 2, 2);
 
 CREATE TABLE Recibe (
     CUIL BIGINT,
@@ -263,6 +300,13 @@ CREATE TABLE Recibe (
 	
 );
 
+INSERT INTO Recibe (CUIL, DNI, cod_nomenclador,   mat_nacional , mat_provincial ,tiene_profesional)
+values
+(35666772222, 899000000, 3, 987654321, 111111111, true);
+
+INSERT INTO Recibe (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador, tiene_profesional)
+VALUES (111111111, 111111111, 987654321, 111111111, 1, true);
+
 create table Padece (
 CUIL BIGINT,
 DNI BIGINT,
@@ -271,6 +315,10 @@ constraint CUIL_DNI_id_PK_Padece primary key (CUIL, DNI, cod),
 constraint CUIL_DNI_FK_Padece foreign key (CUIL, DNI) references Persona (CUIL, DNI),
 constraint cod_FK_Padece foreign key (cod) references Evento (cod)
 );
+
+INSERT INTO Padece (CUIL, DNI, cod)
+values
+(3234555555, 99999999999,1);
 
 create table Puede_Ser (
 cod int,
@@ -296,10 +344,12 @@ constraint cod_nomenclador_FK_produce foreign key (cod_nomenclador) references T
 constraint cod_FK_produce foreign key (cod) references Efecto_adverso(cod)
 );
 
--- Se_realizan.cod_nomneclador -> Tratamiento.cod_nomneclador
--- Se_realizan.nro -> Centro_salud.nro
+insert into Produce (cod_nomenclador, cod)
+value (1, 2);
 
--- Se_realizan(cod_nomenclador, nro)
+insert into Produce (cod_nomenclador, cod)
+value (6, 1);
+
 create table Se_realizan (
 cod_nomenclador INT,
 nro INT,
@@ -314,6 +364,16 @@ constraint nro_FK_Se_realizan foreign key (nro) references Centro_salud (nro)
 nombre varchar(35),
 f_ocurrencia date);
 
+insert into Efectos_esperados(cod, nombre, f_ocurrencia)
+values
+(1, 'Mejora la vision', '2023-05-07'),
+(2, 'Reduccion del uso de lentes', '2023-05-13');
+
+insert into Efectos_esperados(cod, nombre, f_ocurrencia)
+values
+(3, 'Reducción de la fiebre', '2023-05-07'),
+(4, 'Alivio del dolor', '2023-05-13');
+
 CREATE TABLE Trat_produce_efec_esperado (
     cod_nomenclador INT,
     cod INT,
@@ -323,6 +383,18 @@ CREATE TABLE Trat_produce_efec_esperado (
     CONSTRAINT Trat_produce_efec_esperado_cod_FK FOREIGN KEY (cod)
         REFERENCES Efectos_esperados (cod)
 );
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (1, 1), (1, 2);
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (1, 3), (1, 4);
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (6, 1), (6, 2);
+
+INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
+VALUES (6, 1), (6, 2);
 
 /*
 
@@ -403,112 +475,6 @@ where T.descripcion like 'Vacuna%' and E.f_ocurrencia between '2021-01-01' and '
 group by T.descripcion
 order by t.descripcion;
 
--- vii. Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
-
-SELECT DISTINCT
-    t.cod_nomenclador, t.descripcion
-FROM
-    Tratamiento t
-        INNER JOIN
-   recibe r ON t.cod_nomenclador = r.cod_nomenclador
-        INNER JOIN
-    persona p ON p.dni = r.dni AND p.cuil = .cuil
-        INNER JOIN
-    tiene_PDA tpda ON p.dni = tpda.dni AND p.cuil = tpda.cuil
-WHERE
-    t.es_invasivo = FALSE
-        AND YEAR(CURRENT_DATE()) - YEAR(p.f_nac) >= 18
-GROUP BY t.cod_nomenclador , t.descripcion
-HAVING COUNT(tpda.cod_uni) >= 2; -- Al menos 2 patologías preexistentes
-
-
-/* ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
-considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
-50 años, 51-70 años, 71-90 años, 91 o más años.
- */
- 
-select T.cod_nomenclador, T.descripcion, YEAR(CURRENT_DATE()) - YEAR(p.f_nac) as edad
-from Persona P join Recibe R on P.CUIL = R.CUIL and P.DNI = R.DNI join Tratamiento T 
-on R.cod_nomenclador = T.cod_nomenclador
-where exists( select 1
-from Produce P join Efecto_adverso E on P.cod=E.cod join Tipo_efecto TE on E.nro_tipo = TE.nro
-where P.cod_nomenclador = T.cod_nomenclador and TE.nombre like 'severo')
-and ( year(P.f_nac) = '2023' or year(P.f_nac) between '2022' and '2018'
- or year(P.f_nac) between '2017' and '2011' or year(P.f_nac) between '2010' and '2006'
- or year(P.f_nac) between '2007' and '1998' or year(P.f_nac) between '1996' and '1983'
- or year(P.f_nac) between '1984' and '1973' or year(P.f_nac) between '1974' and '1953'
- or year(P.f_nac) between '1954' and '1933' or year(P.f_nac) >= '1934'
- )
-  group by t.cod_nomenclador, p.f_nac
- order by p.f_nac desc;
- 
--- insertado
-INSERT INTO Diag (cod_uni, descripcion)
-VALUES (1, 'Patología 1'), (2, 'Patología 2');
-
--- insertado
-insert into Antecedente(cod,descripcion )
-value
-(1, 'Dolor de cabeza'), (2, 'Mareos');
-
--- insertado
-INSERT INTO tiene_PDA (CUIL, DNI, cod_uni, cod_ante)
-VALUES (111111111, 111111111, 1, 1), (111111111, 111111111, 2, 2);
-
--- insertado
-insert into Efectos_esperados(cod, nombre, f_ocurrencia)
-values
-(1, 'Mejora la vision', '2023-05-07'),
-(2, 'Reduccion del uso de lentes', '2023-05-13');
-
--- insertado
-insert into Tipo_efecto (nro, nombre)
-values
-(1, 'Leve'), (2, 'Moderado'), (3, 'Severo'), (4, 'Muerte');
-
--- insertado
-INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
-VALUES (6, 1), (6, 2);
-
--- insertado
-insert into Efecto_adverso (cod, nombre, f_ocurrencia, nro_tipo)
-values
-(1, 'Disminucion de la vista',  '2023-05-07',1);
-
--- insertado
-insert into Produce (cod_nomenclador, cod)
-value (6, 1);
-
--- insertado
-insert into Efectos_esperados(cod, nombre, f_ocurrencia)
-values
-(3, 'Reducción de la fiebre', '2023-05-07'),
-(4, 'Alivio del dolor', '2023-05-13');
-
--- insertado
-insert into Efecto_adverso (cod, nombre, f_ocurrencia, nro_tipo)
-values
-(2, 'Sangrado gastrointestinal',  '2023-05-07', 1);
-
--- insertado
-insert into Produce (cod_nomenclador, cod)
-value (1, 2);
-
--- insertado
-INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
-VALUES (1, 1), (1, 2);
-
-INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
-VALUES (1, 3), (1, 4);
-
--- insertado
-INSERT INTO Trat_produce_efec_esperado (cod_nomenclador, cod)
-VALUES (6, 1), (6, 2);
-
--- insertado
-INSERT INTO Recibe (CUIL, DNI, mat_nacional, mat_provincial, cod_nomenclador, tiene_profesional)
-VALUES (111111111, 111111111, 987654321, 111111111, 1, true);
-
 /*V. ¿Cuántas muertes de recién nacidos se pueden relacionar a medicamentos
 administrados a la madre? Si el modelo realizado no permite contestar esta
 pregunta, modificarlo para poder hacerlo.*/
@@ -532,21 +498,6 @@ and E.descripcion like 'Muerte'
 tratamiento en niños por ser el riesgo mayor al beneficio. ¿Qué otra información
 guardarían para realizar esta comparación? Incluirla en el modelo completo.
  */
- 
-/*
-SELECT R.cod_nomenclador, T.descripcion AS "tratamiento", YEAR(p.f_nac)
-FROM Persona P JOIN Recibe R on P.CUIL = R.CUIL 
-join Tratamiento T on T.cod_nomenclador= R.cod_nomenclador
-AND p.f_nac >'2006-01-01'
-WHERE R.cod_nomenclador IN( SELECT T.cod_nomenclador
-							FROM Tratamiento t JOIN Produce p on t.cod_nomenclador=p.cod_nomenclador
-                            JOIN Efecto_Adverso EF on EF.cod=p.cod
-                            WHERE (SELECT COUNT(*)
-                                   FROM Efecto_Adverso E
-                                   GROUP BY E.cod
-                                   having count(E.cod)> 5 ));
-                                   */
-						
 
 SELECT 
     t.cod_nomenclador, t.descripcion
@@ -575,12 +526,28 @@ HAVING COUNT(t.cod_nomenclador) < (SELECT
         trat_produce_efec_esperado tpee ON t2.cod_nomenclador = tpee.cod_nomenclador
     WHERE
         YEAR(CURRENT_DATE()) - YEAR(p2.f_nac) <= 12 and t2.cod_nomenclador = t.cod_nomenclador);
-                                  
-                                   
-                                   
+
+-- vii. Mostrar todos los tratamientos de bajo riesgo practicados a personas con al menos 2 (dos) patologías preexistentes y que sean adultos mayores.
+
+SELECT DISTINCT
+    t.cod_nomenclador, t.descripcion
+FROM
+    Tratamiento t
+        INNER JOIN
+   recibe r ON t.cod_nomenclador = r.cod_nomenclador
+        INNER JOIN
+    persona p ON p.dni = r.dni AND p.cuil = .cuil
+        INNER JOIN
+    tiene_PDA tpda ON p.dni = tpda.dni AND p.cuil = tpda.cuil
+WHERE
+    t.es_invasivo = FALSE
+        AND YEAR(CURRENT_DATE()) - YEAR(p.f_nac) >= 18
+GROUP BY t.cod_nomenclador , t.descripcion
+HAVING COUNT(tpda.cod_uni) >= 2; -- Al menos 2 patologías preexistentes
+
 
 -- viii. Formular una consulta que Uds. Le harían a la app para saber si se realizó un tratamiento.
--- busca si se registro correctamente el tratamiento 
+-- Busca si se registro correctamente el tratamiento 
 select *
 from tratamiento t 
 where exists 
@@ -589,43 +556,29 @@ from recibe r join persona p on r.dni = p.dni and r.cuil = p.cuil
 where r.cod_nomenclador = t.cod_nomenclador);
 
 -- Formular una consulta que Uds. Le harían a la app para saber si se realizarían un tratamiento.
--- ver info del tratamiento y el usuario decide si se ajusta a lo que busca
+-- Ver info del tratamiento y el usuario decide si se ajusta a lo que busca
 select t.descripcion, t.es_invasivo, t.parte_cuerpo_aplicacion
 from tratamiento t;
 
--- INSERTANDO!!
-
--- insertado
-/*Probando*/
-alter table Evento add column  f_ocurrencia DATE;
--- Inserción 1
-
--- insertado
-/* consulta numero 5*/
-insert into Persona(CUIL, DNI, f_nac)
-values
-(35666772222, 899000000, '1998-06-09'),
-(3234555555, 99999999999, '2023-07-01');
-
--- insertado
-insert into Es_hijo_de(CUIL, DNI, CUIL_P, DNI_P)
-VALUES
-(3234555555, 99999999999, 35666772222, 899000000);
-
--- insertado
-INSERT INTO Recibe (CUIL, DNI, cod_nomenclador,   mat_nacional , mat_provincial ,tiene_profesional)
-values
-(35666772222, 899000000, 3, 987654321, 111111111, true);
-
--- insertado
-INSERT INTO Evento (cod, descripcion, f_ocurrencia)
-VALUES (1, 'Muerte', '2023-01-01'); 
-
--- insertado
-INSERT INTO Padece (CUIL, DNI, cod)
-values
-(3234555555, 99999999999,1);
-
+/* ix. Destacar aquellos tratamientos letales, por causar efectos severos, por rango etario,
+considerando 0 años, 1-5 años, 6-12 años, 13-17 años, 18 a 25 años, 26-40 años, 41-
+50 años, 51-70 años, 71-90 años, 91 o más años.
+ */
+ 
+select T.cod_nomenclador, T.descripcion, YEAR(CURRENT_DATE()) - YEAR(p.f_nac) as edad
+from Persona P join Recibe R on P.CUIL = R.CUIL and P.DNI = R.DNI join Tratamiento T 
+on R.cod_nomenclador = T.cod_nomenclador
+where exists( select 1
+from Produce P join Efecto_adverso E on P.cod=E.cod join Tipo_efecto TE on E.nro_tipo = TE.nro
+where P.cod_nomenclador = T.cod_nomenclador and TE.nombre like 'severo')
+and ( year(P.f_nac) = '2023' or year(P.f_nac) between '2022' and '2018'
+ or year(P.f_nac) between '2017' and '2011' or year(P.f_nac) between '2010' and '2006'
+ or year(P.f_nac) between '2007' and '1998' or year(P.f_nac) between '1996' and '1983'
+ or year(P.f_nac) between '1984' and '1973' or year(P.f_nac) between '1974' and '1953'
+ or year(P.f_nac) between '1954' and '1933' or year(P.f_nac) >= '1934'
+ )
+  group by t.cod_nomenclador, p.f_nac
+ order by p.f_nac desc;
 
 
 
